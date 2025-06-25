@@ -71,11 +71,19 @@ async function createDefaultUser() {
     try {
         const md5 = require('md5');
         const defaultPassword = md5("Aadmin123");
+        console.log("Creating default user with password hash:", defaultPassword); // Debug
         
         await promisePool.query(`
             INSERT IGNORE INTO users (name, uname, passwd, email, type_id) 
-            VALUES ('מנהל המערכת', 'admin', '${defaultPassword}', 'admin@example.com', 1)
-        `);
+            VALUES (?, ?, ?, ?, ?)
+        `, ['מנהל המערכת', 'admin', defaultPassword, 'admin@example.com', 1]);
+        
+        // בדיקה שהמשתמש נוצר
+        const [rows] = await promisePool.query("SELECT * FROM users WHERE uname = ?", ['admin']);
+        console.log("Default user check - found rows:", rows.length); // Debug
+        if (rows.length > 0) {
+            console.log("Default user exists with ID:", rows[0].id); // Debug
+        }
         
         console.log('Default user created (username: admin, password: admin123)');
     } catch (error) {

@@ -39,17 +39,20 @@ async function isLogged(req, res, next) {
 
 // בדיקת התחברות משתמש עם שם משתמש וסיסמה
 async function CheckLogin(req, res, next) {
-    let username = (req.body.uname !== undefined) ? addSlashes(req.body.uname) : "";
+    let username = (req.body.uname !== undefined) ? req.body.uname : "";
     let password = (req.body.passwd !== undefined) ? req.body.passwd : "";
     let encryptedPassword = md5("A" + password);
-    let query = `SELECT * FROM users WHERE uname = '${username}' AND passwd = '${encryptedPassword}'`;
+    
+    const query = "SELECT * FROM users WHERE uname = ? AND passwd = ?";
 
     const promisePool = db_pool.promise();
     let rows = [];
     try {
-        [rows] = await promisePool.query(query);
+        [rows] = await promisePool.query(query, [username, encryptedPassword]);
+        console.log("Login attempt for username:", username); // Debug
+        console.log("Found rows:", rows.length); // Debug
     } catch (err) {
-        console.log(err);
+        console.log("Database error during login:", err);
     }
 
     if (rows.length > 0) {
@@ -67,6 +70,7 @@ async function CheckLogin(req, res, next) {
         console.log("Login successful for user:", rows[0].id); // Debug
     } else {
         req.validUser = false;
+        console.log("Login failed for username:", username); // Debug
     }
 
     next();

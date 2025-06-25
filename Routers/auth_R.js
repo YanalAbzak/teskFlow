@@ -10,7 +10,7 @@ router.get("/login",(req, res)=>{
 
 router.post("/login", [user_Mid.CheckLogin], (req, res) => {
     if(req.validUser)
-        res.redirect("/U/List");
+        res.redirect("/Tasks/List");
     else
         res.redirect("/login");
 });

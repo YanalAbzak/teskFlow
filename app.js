@@ -35,7 +35,7 @@ app.use(session({
 }));
 
 // הגדרת הראוטרים
-app.use('/', authRouter);
+app.use('/auth', authRouter);
 app.use('/U', usersRouter);
 app.use('/Tasks', tasksRouter);
 app.use('/Categories', categoriesRouter);
@@ -43,6 +43,24 @@ app.use('/Categories', categoriesRouter);
 // דף הבית - הפניה לרשימת המשימות
 app.get('/', (req, res) => {
     res.redirect('/Tasks/List');
+});
+
+// הוספת ראוטר להתחברות
+app.get('/login', (req, res) => {
+    res.render('login', {});
+});
+
+app.post('/login', [require('./middleware/user_Mid').CheckLogin], (req, res) => {
+    if(req.validUser)
+        res.redirect("/Tasks/List");
+    else
+        res.render('login', { error: 'שם משתמש או סיסמה שגויים' });
+});
+
+// הוספת ראוטר להתנתקות
+app.get('/logout', (req, res) => {
+    res.clearCookie('ImLoggedToYoman');
+    res.redirect('/login');
 });
 
 // דף 404
@@ -74,7 +92,7 @@ async function initializeDatabase() {
 
 // הפעלת השרת
 app.listen(PORT, async () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port http://localhost:${PORT}`);
     await initializeDatabase();
     console.log('Personal Tasks App is ready!');
     console.log('Default user: admin / admin123');

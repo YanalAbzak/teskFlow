@@ -70,6 +70,13 @@
         </div>
         
         <div class="login-body">
+            <% if (locals.error) { %>
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <%= error %>
+                </div>
+            <% } %>
+            
             <form method="POST" action="/login">
                 <div class="mb-3">
                     <label for="uname" class="form-label">שם משתמש</label>

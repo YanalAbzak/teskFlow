@@ -123,8 +123,10 @@ async function AddUser(req, res, next) {
     const query = "INSERT INTO users (name, uname, passwd, email, type_id, tz) VALUES (?, ?, ?, ?, ?, ?)";
 
     try {
-        await promisePool.query(query, [name, username, encryptedPassword, email, typeId, timezone]);
-        console.log("User registered successfully:", username);
+        const [result] = await promisePool.query(query, [name, username, encryptedPassword, email, typeId, timezone]);
+        const newUserId = result.insertId;
+        console.log("User registered successfully:", username, "with ID:", newUserId);
+        
         req.GoodOne = true;
     } catch (err) {
         console.log("Error registering user:", err);

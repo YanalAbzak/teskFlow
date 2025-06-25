@@ -24,6 +24,13 @@
                     </div>
                 <% } %>
 
+                <!-- הודעה על יצירת קטגוריות -->
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>יצירת קטגוריה:</strong> אתה יכול ליצור קטגוריה חופשית לפי הצרכים שלך. 
+                    לדוגמה: עבודה, בית, לימודים, ספורט, קניות, בריאות, בילויים וכו'.
+                </div>
+
                 <form method="POST" action="<%= data.id ? '/Categories/Edit/' + data.id : '/Categories/Add' %>">
                     <div class="mb-3">
                         <label for="name" class="form-label">

@@ -12,7 +12,7 @@ function addSlashes(str) {
 // הוספת קטגוריה חדשה
 async function AddCategory(req, res, next) {
     let userId = parseInt(req.user_id);
-    let name = (req.body.name !== undefined) ? addSlashes(req.body.name) : "";
+    let name = (req.body.name !== undefined) ? req.body.name : "";
     let color = (req.body.color !== undefined) ? req.body.color : "#007bff";
     
     if (name.trim() === "") {
@@ -86,7 +86,7 @@ async function GetOneCategory(req, res, next) {
 async function UpdateCategory(req, res, next) {
     let categoryId = parseInt(req.params.id);
     let userId = parseInt(req.user_id);
-    let name = (req.body.name !== undefined) ? addSlashes(req.body.name) : "";
+    let name = (req.body.name !== undefined) ? req.body.name : "";
     let color = (req.body.color !== undefined) ? req.body.color : "#007bff";
     
     if (name.trim() === "") {

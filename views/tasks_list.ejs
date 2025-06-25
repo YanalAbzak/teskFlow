@@ -4,9 +4,21 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header bg-primary text-white">
-                <h3 class="mb-0">
-                    <i class="fas fa-list me-2"></i><%= page_title %>
-                </h3>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-list me-2"></i><%= page_title %>
+                    </h3>
+                    <div class="task-stats">
+                        <span class="badge bg-light text-dark me-2">
+                            <i class="fas fa-tasks me-1"></i>
+                            <%= tasks ? tasks.length : 0 %> משימות
+                        </span>
+                        <span class="badge bg-success me-2">
+                            <i class="fas fa-check me-1"></i>
+                            <%= tasks ? tasks.filter(t => t.is_completed).length : 0 %> בוצעו
+                        </span>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <!-- הודעות הצלחה/שגיאה -->
@@ -26,27 +38,31 @@
 
                 <!-- סינון משימות -->
                 <div class="row mb-4">
-                    <div class="col-md-6">
-                        <form method="GET" action="/Tasks/List" class="d-flex gap-2">
-                            <select name="filter" class="form-select" onchange="this.form.submit()">
-                                <option value="all" <%= filter === 'all' ? 'selected' : '' %>>כל המשימות</option>
-                                <option value="pending" <%= filter === 'pending' ? 'selected' : '' %>>משימות לביצוע</option>
-                                <option value="completed" <%= filter === 'completed' ? 'selected' : '' %>>משימות בוצעות</option>
-                            </select>
+                    <div class="col-md-8">
+                        <form method="GET" action="/Tasks/List" class="d-flex gap-3">
+                            <div class="flex-grow-1">
+                                <select name="filter" class="form-select" onchange="this.form.submit()">
+                                    <option value="all" <%= filter === 'all' ? 'selected' : '' %>>כל המשימות</option>
+                                    <option value="pending" <%= filter === 'pending' ? 'selected' : '' %>>משימות לביצוע</option>
+                                    <option value="completed" <%= filter === 'completed' ? 'selected' : '' %>>משימות בוצעות</option>
+                                </select>
+                            </div>
                             
-                            <select name="category" class="form-select" onchange="this.form.submit()">
-                                <option value="all">כל הקטגוריות</option>
-                                <% categories.forEach(function(category) { %>
-                                    <option value="<%= category.id %>" 
-                                            <%= selectedCategory == category.id ? 'selected' : '' %>>
-                                        <%= category.name %>
-                                    </option>
-                                <% }); %>
-                            </select>
+                            <div class="flex-grow-1">
+                                <select name="category" class="form-select" onchange="this.form.submit()">
+                                    <option value="all">כל הקטגוריות</option>
+                                    <% categories.forEach(function(category) { %>
+                                        <option value="<%= category.id %>" 
+                                                <%= selectedCategory == category.id ? 'selected' : '' %>>
+                                            <%= category.name %>
+                                        </option>
+                                    <% }); %>
+                                </select>
+                            </div>
                         </form>
                     </div>
                     
-                    <div class="col-md-6 text-end">
+                    <div class="col-md-4 text-end">
                         <a href="/Tasks/Add" class="btn btn-success">
                             <i class="fas fa-plus me-2"></i>הוספת משימה חדשה
                         </a>
@@ -56,35 +72,46 @@
                 <!-- רשימת המשימות -->
                 <% if (tasks && tasks.length > 0) { %>
                     <div class="row">
-                        <% tasks.forEach(function(task) { %>
+                        <% tasks.forEach(function(task, index) { %>
                             <div class="col-12 mb-3">
-                                <div class="card task-item <%= task.is_completed ? 'completed-task' : '' %>">
+                                <div class="card task-item <%= task.is_completed ? 'completed-task' : '' %>" 
+                                     style="animation-delay: <%= index * 0.1 %>s;">
                                     <div class="card-body">
                                         <div class="row align-items-center">
                                             <div class="col-md-8">
-                                                <h5 class="card-title mb-2">
-                                                    <%= task.description %>
-                                                </h5>
-                                                
-                                                <div class="d-flex gap-2 align-items-center">
-                                                    <% if (task.category_name) { %>
-                                                        <span class="badge category-badge" 
-                                                              style="background-color: <%= task.category_color %>">
-                                                            <i class="fas fa-tag me-1"></i><%= task.category_name %>
-                                                        </span>
-                                                    <% } %>
+                                                <div class="d-flex align-items-start">
+                                                    <div class="task-status me-3">
+                                                        <div class="status-indicator <%= task.is_completed ? 'completed' : 'pending' %>">
+                                                            <i class="fas <%= task.is_completed ? 'fa-check-circle' : 'fa-circle' %>"></i>
+                                                        </div>
+                                                    </div>
                                                     
-                                                    <% if (task.due_date) { %>
-                                                        <span class="badge bg-info">
-                                                            <i class="fas fa-calendar me-1"></i>
-                                                            <%= new Date(task.due_date).toLocaleDateString('he-IL') %>
-                                                        </span>
-                                                    <% } %>
-                                                    
-                                                    <small class="text-muted">
-                                                        <i class="fas fa-clock me-1"></i>
-                                                        <%= new Date(task.created_at).toLocaleDateString('he-IL') %>
-                                                    </small>
+                                                    <div class="task-content flex-grow-1">
+                                                        <h5 class="card-title mb-2 <%= task.is_completed ? 'text-muted' : '' %>">
+                                                            <%= task.description %>
+                                                        </h5>
+                                                        
+                                                        <div class="task-meta d-flex flex-wrap gap-2 align-items-center">
+                                                            <% if (task.category_name) { %>
+                                                                <span class="badge category-badge" 
+                                                                      style="background-color: <%= task.category_color %>; color: white;">
+                                                                    <i class="fas fa-tag me-1"></i><%= task.category_name %>
+                                                                </span>
+                                                            <% } %>
+                                                            
+                                                            <% if (task.due_date) { %>
+                                                                <span class="badge bg-info">
+                                                                    <i class="fas fa-calendar me-1"></i>
+                                                                    <%= new Date(task.due_date).toLocaleDateString('he-IL') %>
+                                                                </span>
+                                                            <% } %>
+                                                            
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-clock me-1"></i>
+                                                                <%= new Date(task.created_at).toLocaleDateString('he-IL') %>
+                                                            </small>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             
@@ -124,7 +151,7 @@
 
                     <!-- דפדוף -->
                     <% if (total_pages > 1) { %>
-                        <nav aria-label="דפדוף משימות">
+                        <nav aria-label="דפדוף משימות" class="mt-4">
                             <ul class="pagination">
                                 <% if (page > 0) { %>
                                     <li class="page-item">
@@ -154,17 +181,96 @@
                     <% } %>
                 <% } else { %>
                     <div class="text-center py-5">
-                        <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
-                        <h4 class="text-muted">אין משימות להצגה</h4>
-                        <p class="text-muted">הוסף משימה חדשה כדי להתחיל</p>
-                        <a href="/Tasks/Add" class="btn btn-primary">
-                            <i class="fas fa-plus me-2"></i>הוספת משימה ראשונה
-                        </a>
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list fa-5x text-muted mb-4"></i>
+                            <h4 class="text-muted mb-3">אין משימות להצגה</h4>
+                            <p class="text-muted mb-4">הוסף משימה חדשה כדי להתחיל לנהל את המשימות שלך</p>
+                            <a href="/Tasks/Add" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus me-2"></i>הוספת משימה ראשונה
+                            </a>
+                        </div>
                     </div>
                 <% } %>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .task-status {
+        flex-shrink: 0;
+    }
+    
+    .status-indicator {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .status-indicator.pending {
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        color: var(--secondary-color);
+    }
+    
+    .status-indicator.completed {
+        background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        color: white;
+    }
+    
+    .task-item {
+        transition: all 0.3s ease;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .task-item:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--card-shadow-hover);
+    }
+    
+    .completed-task {
+        opacity: 0.8;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+    
+    .completed-task .card-title {
+        text-decoration: line-through;
+        color: var(--secondary-color);
+    }
+    
+    .task-meta {
+        margin-top: 0.5rem;
+    }
+    
+    .empty-state {
+        padding: 3rem 0;
+    }
+    
+    .task-stats .badge {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    @media (max-width: 768px) {
+        .btn-group {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .btn-group .btn {
+            border-radius: 8px !important;
+        }
+        
+        .task-meta {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+    }
+</style>
 
 <%- include('partials/footer') %> 

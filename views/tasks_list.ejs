@@ -1,0 +1,170 @@
+<%- include('partials/header') %>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">
+                    <i class="fas fa-list me-2"></i><%= page_title %>
+                </h3>
+            </div>
+            <div class="card-body">
+                <!-- הודעות הצלחה/שגיאה -->
+                <% if (typeof taskSuccess !== 'undefined' && taskSuccess) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i><%= taskSuccess %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+                
+                <% if (typeof taskError !== 'undefined' && taskError) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i><%= taskError %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <!-- סינון משימות -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <form method="GET" action="/Tasks/List" class="d-flex gap-2">
+                            <select name="filter" class="form-select" onchange="this.form.submit()">
+                                <option value="all" <%= filter === 'all' ? 'selected' : '' %>>כל המשימות</option>
+                                <option value="pending" <%= filter === 'pending' ? 'selected' : '' %>>משימות לביצוע</option>
+                                <option value="completed" <%= filter === 'completed' ? 'selected' : '' %>>משימות בוצעות</option>
+                            </select>
+                            
+                            <select name="category" class="form-select" onchange="this.form.submit()">
+                                <option value="all">כל הקטגוריות</option>
+                                <% categories.forEach(function(category) { %>
+                                    <option value="<%= category.id %>" 
+                                            <%= selectedCategory == category.id ? 'selected' : '' %>>
+                                        <%= category.name %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </form>
+                    </div>
+                    
+                    <div class="col-md-6 text-end">
+                        <a href="/Tasks/Add" class="btn btn-success">
+                            <i class="fas fa-plus me-2"></i>הוספת משימה חדשה
+                        </a>
+                    </div>
+                </div>
+
+                <!-- רשימת המשימות -->
+                <% if (tasks && tasks.length > 0) { %>
+                    <div class="row">
+                        <% tasks.forEach(function(task) { %>
+                            <div class="col-12 mb-3">
+                                <div class="card task-item <%= task.is_completed ? 'completed-task' : '' %>">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-8">
+                                                <h5 class="card-title mb-2">
+                                                    <%= task.description %>
+                                                </h5>
+                                                
+                                                <div class="d-flex gap-2 align-items-center">
+                                                    <% if (task.category_name) { %>
+                                                        <span class="badge category-badge" 
+                                                              style="background-color: <%= task.category_color %>">
+                                                            <i class="fas fa-tag me-1"></i><%= task.category_name %>
+                                                        </span>
+                                                    <% } %>
+                                                    
+                                                    <% if (task.due_date) { %>
+                                                        <span class="badge bg-info">
+                                                            <i class="fas fa-calendar me-1"></i>
+                                                            <%= new Date(task.due_date).toLocaleDateString('he-IL') %>
+                                                        </span>
+                                                    <% } %>
+                                                    
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock me-1"></i>
+                                                        <%= new Date(task.created_at).toLocaleDateString('he-IL') %>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-4 text-end">
+                                                <div class="btn-group" role="group">
+                                                    <!-- סימון כבוצעת/לא בוצעת -->
+                                                    <form method="POST" action="/Tasks/ToggleCompletion" class="d-inline">
+                                                        <input type="hidden" name="task_id" value="<%= task.id %>">
+                                                        <input type="hidden" name="is_completed" value="<%= !task.is_completed %>">
+                                                        <button type="submit" class="btn btn-sm <%= task.is_completed ? 'btn-warning' : 'btn-success' %>">
+                                                            <i class="fas <%= task.is_completed ? 'fa-undo' : 'fa-check' %>"></i>
+                                                            <%= task.is_completed ? 'בטל ביצוע' : 'סמן כבוצעת' %>
+                                                        </button>
+                                                    </form>
+                                                    
+                                                    <!-- עריכת משימה -->
+                                                    <a href="/Tasks/Edit/<%= task.id %>" class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    
+                                                    <!-- מחיקת משימה -->
+                                                    <form method="POST" action="/Tasks/Delete" class="d-inline" 
+                                                          onsubmit="return confirm('האם אתה בטוח שברצונך למחוק משימה זו?')">
+                                                        <input type="hidden" name="task_id" value="<%= task.id %>">
+                                                        <button type="submit" class="btn btn-sm btn-danger">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+
+                    <!-- דפדוף -->
+                    <% if (total_pages > 1) { %>
+                        <nav aria-label="דפדוף משימות">
+                            <ul class="pagination">
+                                <% if (page > 0) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="/Tasks/List?p=<%= page - 1 %>&filter=<%= filter %>&category=<%= selectedCategory %>">
+                                            <i class="fas fa-chevron-right"></i> הקודם
+                                        </a>
+                                    </li>
+                                <% } %>
+                                
+                                <% for (let i = 0; i <= total_pages; i++) { %>
+                                    <li class="page-item <%= i === page ? 'active' : '' %>">
+                                        <a class="page-link" href="/Tasks/List?p=<%= i %>&filter=<%= filter %>&category=<%= selectedCategory %>">
+                                            <%= i + 1 %>
+                                        </a>
+                                    </li>
+                                <% } %>
+                                
+                                <% if (page < total_pages) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="/Tasks/List?p=<%= page + 1 %>&filter=<%= filter %>&category=<%= selectedCategory %>">
+                                            הבא <i class="fas fa-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                <% } %>
+                            </ul>
+                        </nav>
+                    <% } %>
+                <% } else { %>
+                    <div class="text-center py-5">
+                        <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">אין משימות להצגה</h4>
+                        <p class="text-muted">הוסף משימה חדשה כדי להתחיל</p>
+                        <a href="/Tasks/Add" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>הוספת משימה ראשונה
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %> 

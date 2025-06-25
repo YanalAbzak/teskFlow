@@ -1,0 +1,86 @@
+<%- include('partials/header') %>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">
+                    <i class="fas fa-tags me-2"></i><%= page_title %>
+                </h3>
+            </div>
+            <div class="card-body">
+                <!-- הודעות הצלחה/שגיאה -->
+                <% if (typeof categorySuccess !== 'undefined' && categorySuccess) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i><%= categorySuccess %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+                
+                <% if (typeof categoryError !== 'undefined' && categoryError) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i><%= categoryError %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <div class="text-end mb-4">
+                    <a href="/Categories/Add" class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i>הוספת קטגוריה חדשה
+                    </a>
+                </div>
+
+                <!-- רשימת הקטגוריות -->
+                <% if (categories && categories.length > 0) { %>
+                    <div class="row">
+                        <% categories.forEach(function(category) { %>
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="category-color me-3" 
+                                                 style="width: 20px; height: 20px; background-color: <%= category.color %>; border-radius: 50%;"></div>
+                                            <h5 class="card-title mb-0"><%= category.name %></h5>
+                                        </div>
+                                        
+                                        <div class="text-muted mb-3">
+                                            <small>
+                                                <i class="fas fa-clock me-1"></i>
+                                                נוצרה ב: <%= new Date(category.created_at).toLocaleDateString('he-IL') %>
+                                            </small>
+                                        </div>
+                                        
+                                        <div class="d-flex gap-2">
+                                            <a href="/Categories/Edit/<%= category.id %>" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-edit me-1"></i>ערוך
+                                            </a>
+                                            
+                                            <form method="POST" action="/Categories/Delete" class="d-inline" 
+                                                  onsubmit="return confirm('האם אתה בטוח שברצונך למחוק קטגוריה זו?')">
+                                                <input type="hidden" name="category_id" value="<%= category.id %>">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-trash me-1"></i>מחק
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="text-center py-5">
+                        <i class="fas fa-tags fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">אין קטגוריות להצגה</h4>
+                        <p class="text-muted">צור קטגוריה חדשה כדי להתחיל לארגן את המשימות שלך</p>
+                        <a href="/Categories/Add" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>הוספת קטגוריה ראשונה
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %> 

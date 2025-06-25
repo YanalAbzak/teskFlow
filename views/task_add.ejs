@@ -1,0 +1,124 @@
+<%- include('partials/header') %>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">
+                    <i class="fas fa-plus me-2"></i><%= page_title %>
+                </h3>
+            </div>
+            <div class="card-body">
+                <!-- הודעות הצלחה/שגיאה -->
+                <% if (typeof taskSuccess !== 'undefined' && taskSuccess) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i><%= taskSuccess %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+                
+                <% if (typeof taskError !== 'undefined' && taskError) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i><%= taskError %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <form method="POST" action="<%= data.id ? '/Tasks/Edit/' + data.id : '/Tasks/Add' %>">
+                    <div class="mb-3">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-tasks me-1"></i>תיאור המשימה *
+                        </label>
+                        <textarea 
+                            class="form-control" 
+                            id="description" 
+                            name="description" 
+                            rows="3" 
+                            maxlength="200" 
+                            required
+                            placeholder="הכנס תיאור למשימה (עד 200 תווים)"
+                        ><%= data.description || '' %></textarea>
+                        <div class="form-text">
+                            <span id="charCount">0</span>/200 תווים
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="due_date" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i>תאריך יעד
+                                </label>
+                                <input 
+                                    type="date" 
+                                    class="form-control" 
+                                    id="due_date" 
+                                    name="due_date"
+                                    value="<%= data.due_date || '' %>"
+                                >
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="category_id" class="form-label">
+                                    <i class="fas fa-tag me-1"></i>קטגוריה
+                                </label>
+                                <select class="form-select" id="category_id" name="category_id">
+                                    <option value="">ללא קטגוריה</option>
+                                    <% categories.forEach(function(category) { %>
+                                        <option value="<%= category.id %>" 
+                                                <%= data.category_id == category.id ? 'selected' : '' %>>
+                                            <%= category.name %>
+                                        </option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            <%= data.id ? 'עדכן משימה' : 'הוסף משימה' %>
+                        </button>
+                        
+                        <a href="/Tasks/List" class="btn btn-secondary">
+                            <i class="fas fa-arrow-right me-2"></i>חזור לרשימה
+                        </a>
+                        
+                        <% if (data.id) { %>
+                            <a href="/Tasks/Add" class="btn btn-success">
+                                <i class="fas fa-plus me-2"></i>משימה חדשה
+                            </a>
+                        <% } %>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ספירת תווים
+    const descriptionTextarea = document.getElementById('description');
+    const charCount = document.getElementById('charCount');
+    
+    descriptionTextarea.addEventListener('input', function() {
+        const count = this.value.length;
+        charCount.textContent = count;
+        
+        if (count > 180) {
+            charCount.style.color = 'orange';
+        } else if (count > 190) {
+            charCount.style.color = 'red';
+        } else {
+            charCount.style.color = 'inherit';
+        }
+    });
+    
+    // עדכון הספירה בטעינת הדף
+    charCount.textContent = descriptionTextarea.value.length;
+</script>
+
+<%- include('partials/footer') %> 

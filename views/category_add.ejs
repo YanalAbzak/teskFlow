@@ -1,0 +1,82 @@
+<%- include('partials/header') %>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">
+                    <i class="fas fa-tag me-2"></i><%= page_title %>
+                </h3>
+            </div>
+            <div class="card-body">
+                <!-- הודעות הצלחה/שגיאה -->
+                <% if (typeof categorySuccess !== 'undefined' && categorySuccess) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i><%= categorySuccess %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+                
+                <% if (typeof categoryError !== 'undefined' && categoryError) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i><%= categoryError %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <form method="POST" action="<%= data.id ? '/Categories/Edit/' + data.id : '/Categories/Add' %>">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">
+                            <i class="fas fa-tag me-1"></i>שם הקטגוריה *
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="name" 
+                            name="name" 
+                            value="<%= data.name || '' %>"
+                            required
+                            placeholder="הכנס שם לקטגוריה"
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="color" class="form-label">
+                            <i class="fas fa-palette me-1"></i>צבע הקטגוריה
+                        </label>
+                        <div class="d-flex align-items-center gap-3">
+                            <input 
+                                type="color" 
+                                class="form-control form-control-color" 
+                                id="color" 
+                                name="color"
+                                value="<%= data.color || '#007bff' %>"
+                                title="בחר צבע לקטגוריה"
+                            >
+                            <span class="text-muted">בחר צבע לזיהוי הקטגוריה</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            <%= data.id ? 'עדכן קטגוריה' : 'הוסף קטגוריה' %>
+                        </button>
+                        
+                        <a href="/Categories/List" class="btn btn-secondary">
+                            <i class="fas fa-arrow-right me-2"></i>חזור לרשימה
+                        </a>
+                        
+                        <% if (data.id) { %>
+                            <a href="/Categories/Add" class="btn btn-success">
+                                <i class="fas fa-plus me-2"></i>קטגוריה חדשה
+                            </a>
+                        <% } %>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %> 

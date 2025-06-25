@@ -11,7 +11,7 @@ function addSlashes(str) {
 
 // הוספת משימה חדשה
 async function AddTask(req, res, next) {
-    let userId = req.user_id;
+    let userId = parseInt(req.user_id);
     let description = (req.body.description !== undefined) ? addSlashes(req.body.description) : "";
     let dueDate = (req.body.due_date !== undefined) ? req.body.due_date : null;
     let categoryId = (req.body.category_id !== undefined) ? parseInt(req.body.category_id) : null;
@@ -37,7 +37,7 @@ async function AddTask(req, res, next) {
 
 // קבלת כל המשימות של המשתמש עם דפדוף וסינון
 async function GetAllTasks(req, res, next) {
-    let userId = req.user_id;
+    let userId = parseInt(req.user_id);
     let currentPage = 0;
     let rowsPerPage = 10;
     let filter = req.query.filter || 'all'; // all, completed, pending
@@ -48,7 +48,7 @@ async function GetAllTasks(req, res, next) {
     }
     req.page = currentPage;
 
-    let whereConditions = [`user_id = ${userId}`];
+    let whereConditions = ['user_id = ?'];
     let params = [userId];
 
     // סינון לפי סטטוס
@@ -120,7 +120,7 @@ async function GetAllTasks(req, res, next) {
 // קבלת משימה אחת לפי מזהה
 async function GetOneTask(req, res, next) {
     let taskId = parseInt(req.params.id);
-    let userId = req.user_id;
+    let userId = parseInt(req.user_id);
     
     if (taskId <= 0) {
         req.GoodOne = false;
@@ -156,7 +156,7 @@ async function GetOneTask(req, res, next) {
 // עדכון משימה
 async function UpdateTask(req, res, next) {
     let taskId = parseInt(req.params.id);
-    let userId = req.user_id;
+    let userId = parseInt(req.user_id);
     let description = (req.body.description !== undefined) ? addSlashes(req.body.description) : "";
     let dueDate = (req.body.due_date !== undefined) ? req.body.due_date : null;
     let categoryId = (req.body.category_id !== undefined) ? parseInt(req.body.category_id) : null;
@@ -188,7 +188,7 @@ async function UpdateTask(req, res, next) {
 // סימון משימה כבוצעת
 async function ToggleTaskCompletion(req, res, next) {
     let taskId = parseInt(req.body.task_id);
-    let userId = req.user_id;
+    let userId = parseInt(req.user_id);
     let isCompleted = req.body.is_completed === 'true';
     
     let query = `
@@ -213,7 +213,7 @@ async function ToggleTaskCompletion(req, res, next) {
 // מחיקת משימה
 async function DeleteTask(req, res, next) {
     let taskId = parseInt(req.body.task_id);
-    let userId = req.user_id;
+    let userId = parseInt(req.user_id);
     
     let query = "DELETE FROM tasks WHERE id = ? AND user_id = ?";
     const promisePool = db_pool.promise();

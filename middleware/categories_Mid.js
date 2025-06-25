@@ -11,7 +11,7 @@ function addSlashes(str) {
 
 // הוספת קטגוריה חדשה
 async function AddCategory(req, res, next) {
-    let userId = req.user_id;
+    let userId = parseInt(req.user_id);
     let name = (req.body.name !== undefined) ? addSlashes(req.body.name) : "";
     let color = (req.body.color !== undefined) ? req.body.color : "#007bff";
     
@@ -36,7 +36,7 @@ async function AddCategory(req, res, next) {
 
 // קבלת כל הקטגוריות של המשתמש
 async function GetAllCategories(req, res, next) {
-    let userId = req.user_id;
+    let userId = parseInt(req.user_id);
     
     let query = "SELECT * FROM categories WHERE user_id = ? ORDER BY name";
     const promisePool = db_pool.promise();
@@ -55,7 +55,7 @@ async function GetAllCategories(req, res, next) {
 // קבלת קטגוריה אחת לפי מזהה
 async function GetOneCategory(req, res, next) {
     let categoryId = parseInt(req.params.id);
-    let userId = req.user_id;
+    let userId = parseInt(req.user_id);
     
     if (categoryId <= 0) {
         req.GoodOne = false;
@@ -85,7 +85,7 @@ async function GetOneCategory(req, res, next) {
 // עדכון קטגוריה
 async function UpdateCategory(req, res, next) {
     let categoryId = parseInt(req.params.id);
-    let userId = req.user_id;
+    let userId = parseInt(req.user_id);
     let name = (req.body.name !== undefined) ? addSlashes(req.body.name) : "";
     let color = (req.body.color !== undefined) ? req.body.color : "#007bff";
     
@@ -111,7 +111,7 @@ async function UpdateCategory(req, res, next) {
 // מחיקת קטגוריה
 async function DeleteCategory(req, res, next) {
     let categoryId = parseInt(req.body.category_id);
-    let userId = req.user_id;
+    let userId = parseInt(req.user_id);
     
     // בדיקה אם יש משימות שמשתמשות בקטגוריה זו
     let checkQuery = "SELECT COUNT(*) as count FROM tasks WHERE category_id = ? AND user_id = ?";
@@ -138,7 +138,7 @@ async function DeleteCategory(req, res, next) {
 
 // קבלת קטגוריות לסלקט (למשימות)
 async function GetCategoriesForSelect(req, res, next) {
-    let userId = req.user_id;
+    let userId = parseInt(req.user_id);
     
     let query = "SELECT id, name, color FROM categories WHERE user_id = ? ORDER BY name";
     const promisePool = db_pool.promise();

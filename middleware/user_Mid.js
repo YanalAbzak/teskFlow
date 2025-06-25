@@ -78,25 +78,57 @@ async function CheckLogin(req, res, next) {
 
 // הוספת משתמש חדש למערכת
 async function AddUser(req, res, next) {
-    let name = (req.body.name !== undefined) ? addSlashes(req.body.name) : "";
-    let username = (req.body.uname !== undefined) ? addSlashes(req.body.uname) : "";
+    let name = (req.body.name !== undefined) ? req.body.name : "";
+    let username = (req.body.uname !== undefined) ? req.body.uname : "";
     let password = (req.body.passwd !== undefined) ? req.body.passwd : "";
-    let encryptedPassword = md5("A" + password);
-    let email = (req.body.email !== undefined) ? addSlashes(req.body.email) : "";
-    let typeId = (req.body.type_id !== undefined) ? Number(req.body.type_id) : 1;
-    let timezone = (req.body.tz !== undefined) ? addSlashes(req.body.tz) : "Asia/Jerusalem";
-
-    let query = "INSERT INTO users";
-    query += "( `name`, `uname`, `passwd`, `email`, `type_id`, `tz`)";
-    query += " VALUES ";
-    query += `( '${name}', '${username}', '${encryptedPassword}', '${email}', '${typeId}', '${timezone}')`;
-
+    let confirmPassword = (req.body.confirm_passwd !== undefined) ? req.body.confirm_passwd : "";
+    let email = (req.body.email !== undefined) ? req.body.email : "";
+    
+    // בדיקות תקינות
+    if (!name || !username || !password || !email) {
+        req.GoodOne = false;
+        return next();
+    }
+    
+    if (password !== confirmPassword) {
+        req.GoodOne = false;
+        return next();
+    }
+    
+    if (password.length < 6) {
+        req.GoodOne = false;
+        return next();
+    }
+    
     const promisePool = db_pool.promise();
-    let rows = [];
+    
+    // בדיקה אם שם המשתמש כבר קיים
     try {
-        [rows] = await promisePool.query(query);
+        const [existingUsers] = await promisePool.query("SELECT id FROM users WHERE uname = ?", [username]);
+        if (existingUsers.length > 0) {
+            console.log("Username already exists:", username);
+            req.GoodOne = false;
+            return next();
+        }
     } catch (err) {
-        console.log(err);
+        console.log("Error checking existing username:", err);
+        req.GoodOne = false;
+        return next();
+    }
+    
+    let encryptedPassword = md5("A" + password);
+    let typeId = 1; // משתמש רגיל
+    let timezone = "Asia/Jerusalem";
+
+    const query = "INSERT INTO users (name, uname, passwd, email, type_id, tz) VALUES (?, ?, ?, ?, ?, ?)";
+
+    try {
+        await promisePool.query(query, [name, username, encryptedPassword, email, typeId, timezone]);
+        console.log("User registered successfully:", username);
+        req.GoodOne = true;
+    } catch (err) {
+        console.log("Error registering user:", err);
+        req.GoodOne = false;
     }
 
     next();

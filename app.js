@@ -57,6 +57,25 @@ app.post('/login', [require('./middleware/user_Mid').CheckLogin], (req, res) => 
         res.render('login', { error: 'שם משתמש או סיסמה שגויים' });
 });
 
+// הוספת ראוטר להרשמה
+app.get('/register', (req, res) => {
+    res.render('register', {});
+});
+
+app.post('/register', [require('./middleware/user_Mid').AddUser], (req, res) => {
+    if(req.GoodOne === true) {
+        res.render('register', { 
+            success: 'ההרשמה הושלמה בהצלחה! כעת תוכל להתחבר למערכת.',
+            data: {}
+        });
+    } else {
+        res.render('register', { 
+            error: 'שגיאה בהרשמה. ייתכן שם המשתמש כבר קיים או שהסיסמה קצרה מדי (מינימום 6 תווים).',
+            data: req.body
+        });
+    }
+});
+
 // הוספת ראוטר להתנתקות
 app.get('/logout', (req, res) => {
     res.clearCookie('ImLoggedToYoman');

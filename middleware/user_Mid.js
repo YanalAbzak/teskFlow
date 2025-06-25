@@ -1,23 +1,36 @@
-var md5 = require('md5');
+const jwt = require('jsonwebtoken');
+const md5 = require('md5');
+const { db_pool } = require('../config/database');
+
+// פונקציה להוספת backslashes למניעת SQL injection
+function addSlashes(str) {
+    if (typeof str !== 'string') return str;
+    return str.replace(/\\/g, '\\\\')
+              .replace(/'/g, "\\'")
+              .replace(/"/g, '\\"')
+              .replace(/\0/g, '\\0');
+}
 
 // בדיקה אם המשתמש מחובר באמצעות JWT token
 async function isLogged(req, res, next) {
     const jwtToken = req.cookies.ImLoggedToYoman;
     let userId = -1;
-    if (jwtToken !== "") {
-        jwt.verify(jwtToken, 'myPrivateKey', async (err, decodedToken) => {
-            if (err) {
-                console.log("err=", err);
-            } else {
-                let data = decodedToken.data;
-                userId = data.split(",")[0];
-                req.user_id = userId;
-            }
-        })
+    
+    if (jwtToken && jwtToken !== "") {
+        try {
+            const decodedToken = jwt.verify(jwtToken, 'myPrivateKey');
+            let data = decodedToken.data;
+            userId = data.split(",")[0];
+            req.user_id = userId;
+        } catch (err) {
+            console.log("JWT verification error:", err);
+        }
     }
-    if (userId < 0)
-        res.redirect("/login");
-
+    
+    if (userId < 0) {
+        return res.redirect("/login");
+    }
+    
     next();
 }
 
@@ -48,6 +61,8 @@ async function CheckLogin(req, res, next) {
         res.cookie("ImLoggedToYoman", token, {
             maxAge: 31 * 24 * 60 * 60 * 1000, // 31 ימים במילישניות
         });
+    } else {
+        req.validUser = false;
     }
 
     next();
@@ -60,8 +75,8 @@ async function AddUser(req, res, next) {
     let password = (req.body.passwd !== undefined) ? req.body.passwd : "";
     let encryptedPassword = md5("A" + password);
     let email = (req.body.email !== undefined) ? addSlashes(req.body.email) : "";
-    let typeId = (req.body.type_id !== undefined) ? Number(req.body.type_id) : -1;
-    let timezone = (req.body.tz !== undefined) ? addSlashes(req.body.tz) : "";
+    let typeId = (req.body.type_id !== undefined) ? Number(req.body.type_id) : 1;
+    let timezone = (req.body.tz !== undefined) ? addSlashes(req.body.tz) : "Asia/Jerusalem";
 
     let query = "INSERT INTO users";
     query += "( `name`, `uname`, `passwd`, `email`, `type_id`, `tz`)";
@@ -85,8 +100,8 @@ async function UpdateUser(req, res, next) {
     let name = (req.body.name !== undefined) ? addSlashes(req.body.name) : "";
     let username = (req.body.uname !== undefined) ? addSlashes(req.body.uname) : "";
     let email = (req.body.email !== undefined) ? addSlashes(req.body.email) : "";
-    let typeId = (req.body.type_id !== undefined) ? Number(req.body.type_id) : -1;
-    let timezone = (req.body.tz !== undefined) ? addSlashes(req.body.tz) : "";
+    let typeId = (req.body.type_id !== undefined) ? Number(req.body.type_id) : 1;
+    let timezone = (req.body.tz !== undefined) ? addSlashes(req.body.tz) : "Asia/Jerusalem";
     
     if (userId <= 0) {
         req.GoodOne = false;
@@ -116,7 +131,7 @@ async function UpdateUser(req, res, next) {
 // קבלת כל המשתמשים עם דפדוף
 async function GetAllUsers(req, res, next) {
     let currentPage = 0;
-    let rowsPerPage = 2;
+    let rowsPerPage = 10;
     if (req.query.p !== undefined) {
         currentPage = parseInt(req.query.p);
     }
@@ -136,7 +151,7 @@ async function GetAllUsers(req, res, next) {
     req.total_pages = Math.floor(totalRows / rowsPerPage);
     
     // קבלת המשתמשים לדף הנוכחי
-    query = "SELECT * FROM users";
+    query = "SELECT * FROM users ORDER BY created_at DESC";
     query += ` LIMIT ${currentPage * rowsPerPage},${rowsPerPage} `;
     req.users_data = [];
     try {
@@ -198,5 +213,5 @@ module.exports = {
     DeleteUser,
     UpdateUser,
     CheckLogin,
-    isLogged,
-}
+    isLogged
+};

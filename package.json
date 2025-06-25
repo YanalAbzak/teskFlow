@@ -1,7 +1,7 @@
 {
-  "name": "personal-tasks-manager",
+  "name": "personal-tasks-app",
   "version": "1.0.0",
-  "description": "Personal Task Management System with User Authentication",
+  "description": "Personal Task Management Application",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -15,13 +15,12 @@
     "jsonwebtoken": "^9.0.2",
     "md5": "^2.3.0",
     "ejs": "^3.1.9",
-    "body-parser": "^1.20.2",
-    "express-validator": "^7.0.1"
+    "body-parser": "^1.20.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
   },
-  "keywords": ["tasks", "management", "personal", "authentication"],
+  "keywords": ["tasks", "management", "personal"],
   "author": "Your Name",
   "license": "MIT"
 } 

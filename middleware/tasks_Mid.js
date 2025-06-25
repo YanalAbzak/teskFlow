@@ -48,26 +48,26 @@ async function GetAllTasks(req, res, next) {
     }
     req.page = currentPage;
 
-    let whereConditions = ['user_id = ?'];
+    let whereConditions = ['t.user_id = ?'];
     let params = [userId];
 
     // סינון לפי סטטוס
     if (filter === 'completed') {
-        whereConditions.push('is_completed = 1');
+        whereConditions.push('t.is_completed = 1');
     } else if (filter === 'pending') {
-        whereConditions.push('is_completed = 0');
+        whereConditions.push('t.is_completed = 0');
     }
 
     // סינון לפי קטגוריה
     if (categoryId && categoryId !== 'all') {
-        whereConditions.push('category_id = ?');
+        whereConditions.push('t.category_id = ?');
         params.push(categoryId);
     }
 
     let whereClause = whereConditions.join(' AND ');
 
     // ספירת מספר המשימות
-    let countQuery = `SELECT COUNT(*) AS cnt FROM tasks WHERE ${whereClause}`;
+    let countQuery = `SELECT COUNT(*) AS cnt FROM tasks t WHERE ${whereClause}`;
     const promisePool = db_pool.promise();
     let totalRows = 0;
     

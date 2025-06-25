@@ -20,14 +20,17 @@ async function isLogged(req, res, next) {
         try {
             const decodedToken = jwt.verify(jwtToken, 'myPrivateKey');
             let data = decodedToken.data;
-            userId = data.split(",")[0];
+            userId = parseInt(data.split(",")[0]);
             req.user_id = userId;
+            console.log("User ID from JWT:", userId); // Debug
         } catch (err) {
             console.log("JWT verification error:", err);
+            req.user_id = -1;
         }
     }
     
-    if (userId < 0) {
+    if (userId < 0 || isNaN(userId)) {
+        console.log("Invalid user ID, redirecting to login");
         return res.redirect("/login");
     }
     
@@ -61,6 +64,7 @@ async function CheckLogin(req, res, next) {
         res.cookie("ImLoggedToYoman", token, {
             maxAge: 31 * 24 * 60 * 60 * 1000, // 31 ימים במילישניות
         });
+        console.log("Login successful for user:", rows[0].id); // Debug
     } else {
         req.validUser = false;
     }

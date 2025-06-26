@@ -4,6 +4,14 @@ A modern, secure, and user-friendly web application for managing personal tasks,
 
 ---
 
+Demo
+
+![Demo](demo.gif)
+
+*Modern login screen demo – RTL, responsive, and beautiful* 
+
+---
+
 ## Features
 
 - **User Authentication**: Secure login and registration with JWT tokens
@@ -151,14 +159,4 @@ project-root/
 
 ---
 
-## License
-MIT License
 
----
-
-## Contact & Support
-For questions or issues, please open an Issue on GitHub.
-
-![Demo](demo.gif)
-
-*Modern login screen demo – RTL, responsive, and beautiful* 

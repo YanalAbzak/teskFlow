@@ -3,13 +3,8 @@
 A modern, secure, and user-friendly web application for managing personal tasks, with user authentication, categories, statistics, and advanced UI features.
 
 ---
-
 Demo
-
 ![Demo](demo.gif)
-
-*Modern login screen demo – RTL, responsive, and beautiful* 
-
 ---
 
 ## Features

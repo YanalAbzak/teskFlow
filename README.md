@@ -1,181 +1,160 @@
-# תוכנת המשימות האישית
+# Personal Task Management Application
 
-תוכנה לניהול משימות אישיות עם מערכת אימות משתמשים וניהול קטגוריות.
-
-## תכונות עיקריות
-
-- ✅ מערכת אימות משתמשים עם JWT
-- ✅ ניהול משימות אישיות (כל משתמש רואה רק את המשימות שלו)
-- ✅ ניהול קטגוריות מותאם אישית
-- ✅ סינון משימות לפי סטטוס (בוצעות/לא בוצעות)
-- ✅ סינון משימות לפי קטגוריה
-- ✅ דפדוף (10 משימות לכל עמוד)
-- ✅ הגבלת תיאור המשימה ל-200 תווים
-- ✅ תאריך יעד למשימות
-- ✅ ממשק משתמש מודרני וידידותי
-- ✅ הגנות אבטחה (SQL Injection, XSS)
-
-## דרישות מערכת
-
-- Node.js (גרסה 14 ומעלה)
-- MySQL (גרסה 5.7 ומעלה)
-- npm או yarn
-
-## התקנה
-
-1. **שכפול הפרויקט**
-   ```bash
-   git clone <repository-url>
-   cd personal-tasks-app
-   ```
-
-2. **התקנת תלויות**
-   ```bash
-   npm install
-   ```
-
-3. **הגדרת בסיס הנתונים**
-   - צור בסיס נתונים חדש ב-MySQL בשם `personal_tasks_db`
-   - עדכן את פרטי החיבור בקובץ `config/database.js` אם נדרש
-
-4. **הפעלת השרת**
-   ```bash
-   npm start
-   ```
-   
-   או למצב פיתוח:
-   ```bash
-   npm run dev
-   ```
-
-5. **גישה לאפליקציה**
-   - פתח דפדפן וגש ל: `http://localhost:3000`
-   - התחבר עם המשתמש הראשי: `admin` / `admin123`
-
-## מבנה הפרויקט
-
-```
-personal-tasks-app/
-├── config/
-│   └── database.js          # קונפיגורציית בסיס הנתונים
-├── middleware/
-│   ├── user_Mid.js          # middleware לניהול משתמשים
-│   ├── tasks_Mid.js         # middleware לניהול משימות
-│   └── categories_Mid.js    # middleware לניהול קטגוריות
-├── Routers/
-│   ├── auth_R.js            # ראוטר אימות
-│   ├── users_R.js           # ראוטר משתמשים
-│   ├── tasks_R.js           # ראוטר משימות
-│   └── categories_R.js      # ראוטר קטגוריות
-├── views/
-│   ├── partials/
-│   │   ├── header.ejs       # תבנית כותרת
-│   │   └── footer.ejs       # תבנית סיום
-│   ├── login.ejs            # דף התחברות
-│   ├── tasks_list.ejs       # רשימת משימות
-│   ├── task_add.ejs         # הוספת/עריכת משימה
-│   ├── categories_list.ejs  # רשימת קטגוריות
-│   ├── category_add.ejs     # הוספת/עריכת קטגוריה
-│   ├── 404.ejs             # דף לא נמצא
-│   └── error.ejs           # דף שגיאה
-├── app.js                   # קובץ ראשי
-├── package.json            # תלויות הפרויקט
-└── README.md               # קובץ זה
-```
-
-## מבנה בסיס הנתונים
-
-### טבלת משתמשים (users)
-- `id` - מזהה ייחודי
-- `name` - שם מלא
-- `uname` - שם משתמש (ייחודי)
-- `passwd` - סיסמה מוצפנת (MD5)
-- `email` - כתובת אימייל
-- `type_id` - סוג משתמש
-- `tz` - אזור זמן
-- `created_at` - תאריך יצירה
-
-### טבלת קטגוריות (categories)
-- `id` - מזהה ייחודי
-- `user_id` - מזהה המשתמש (קשר לטבלת משתמשים)
-- `name` - שם הקטגוריה
-- `color` - צבע הקטגוריה
-- `created_at` - תאריך יצירה
-
-### טבלת משימות (tasks)
-- `id` - מזהה ייחודי
-- `user_id` - מזהה המשתמש (קשר לטבלת משתמשים)
-- `category_id` - מזהה הקטגוריה (קשר לטבלת קטגוריות)
-- `description` - תיאור המשימה (עד 200 תווים)
-- `due_date` - תאריך יעד
-- `is_completed` - האם בוצעה
-- `created_at` - תאריך יצירה
-- `updated_at` - תאריך עדכון אחרון
-
-## שימוש באפליקציה
-
-### התחברות
-1. גש לדף ההתחברות
-2. הכנס שם משתמש וסיסמה
-3. המשתמש הראשי: `admin` / `admin123`
-
-### ניהול קטגוריות
-1. לחץ על "ניהול קטגוריות" בתפריט
-2. הוסף קטגוריות חדשות עם שמות וצבעים
-3. ערוך או מחק קטגוריות קיימות
-
-### ניהול משימות
-1. לחץ על "המשימות שלי" בתפריט
-2. הוסף משימות חדשות עם תיאור, תאריך יעד וקטגוריה
-3. סמן משימות כבוצעות
-4. ערוך או מחק משימות
-5. סנן משימות לפי סטטוס או קטגוריה
-6. השתמש בדפדוף לניווט בין עמודים
-
-## אבטחה
-
-האפליקציה כוללת מספר מנגנוני אבטחה:
-
-- **SQL Injection Protection**: שימוש בפרמטרים מוכנים
-- **XSS Protection**: סינון קלט משתמש
-- **JWT Authentication**: אימות משתמשים עם tokens
-- **Session Management**: ניהול סשנים מאובטח
-- **Input Validation**: אימות קלט משתמש
-- **User Isolation**: כל משתמש רואה רק את הנתונים שלו
-
-## פיתוח
-
-### הוספת תכונות חדשות
-1. צור middleware חדש ב-`middleware/`
-2. הוסף ראוטר ב-`Routers/`
-3. צור תצוגות ב-`views/`
-4. עדכן את `app.js` אם נדרש
-
-### בדיקות
-```bash
-# בדיקת תחביר
-npm run lint
-
-# בדיקת אבטחה
-npm audit
-```
-
-## תרומה לפרויקט
-
-1. Fork את הפרויקט
-2. צור branch חדש לתכונה
-3. בצע את השינויים
-4. שלח Pull Request
-
-## רישיון
-
-MIT License - ראה קובץ LICENSE לפרטים.
-
-## תמיכה
-
-לשאלות או בעיות, אנא צור Issue ב-GitHub.
+A modern, secure, and user-friendly web application for managing personal tasks, with user authentication, categories, statistics, and advanced UI features.
 
 ---
 
-**פותח על ידי:** [שם המפתח]
-**תאריך:** 2024 
+## Features
+
+- **User Authentication**: Secure login and registration with JWT tokens
+- **Personal Task Management**: Each user sees only their own tasks
+- **Custom Categories**: Add, edit, and color-code categories
+- **Task Filtering**: By status (completed/pending) and by category
+- **Pagination**: 10 tasks per page
+- **Due Dates**: Set deadlines for tasks
+- **Modern UI**: Responsive, RTL-friendly, Bootstrap 5
+- **Security**: SQL injection/XSS protection, session management, input validation
+- **Statistics & Reports**: Interactive charts (Chart.js) for completed/pending tasks, by category and by month
+- **Dark Mode / Light Mode**: User toggle, saved in localStorage
+- **Drag & Drop Task Reordering**: SortableJS, order saved in DB
+- **Quick Add, Inline Edit, Swipe, Keyboard Shortcuts**: *(in development)*
+- **Custom Icons & Colors for Categories**
+
+---
+
+## Installation & Setup
+
+### Prerequisites
+- **Node.js** v14 or higher (recommended: latest LTS)
+- **MySQL** v5.7 or higher
+- **npm** (comes with Node.js)
+
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd <project-folder>
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Database Setup
+- Create a new MySQL database named `personal_tasks_db` (or your preferred name)
+- Import the provided `database_export.sql` to create tables and demo data:
+
+```bash
+mysql -u <user> -p < personal_tasks_db.sql
+```
+
+- Make sure the `tasks` table includes the `sort_order` column (see `database_export.sql`)
+- Update your DB credentials in `config/database.js` if needed
+
+### 4. Run the Application
+- For production:
+```bash
+npm start
+```
+- For development (with auto-reload):
+```bash
+npm run dev
+```
+
+### 5. Access the App
+- Open your browser at: [http://localhost:3000](http://localhost:3000)
+- Default admin user: `admin` / `admin123`
+
+---
+
+## Project Structure
+
+```
+project-root/
+├── config/
+│   └── database.js
+├── middleware/
+│   ├── user_Mid.js
+│   ├── tasks_Mid.js
+│   └── categories_Mid.js
+├── Routers/
+│   ├── auth_R.js
+│   ├── users_R.js
+│   ├── tasks_R.js
+│   └── categories_R.js
+├── views/
+│   ├── partials/
+│   ├── ... (EJS templates)
+├── app.js
+├── package.json
+├── database_export.sql
+└── README.md
+```
+
+---
+
+## Database Schema (Main Tables)
+
+### users
+- `id` (PK)
+- `name`
+- `uname` (unique)
+- `passwd` (hashed)
+- `email`
+- `type_id`
+- `tz`
+- `created_at`
+
+### categories
+- `id` (PK)
+- `user_id` (FK)
+- `name`
+- `color`
+- `created_at`
+
+### tasks
+- `id` (PK)
+- `user_id` (FK)
+- `category_id` (FK)
+- `description`
+- `due_date`
+- `is_completed`
+- `sort_order`
+- `created_at`
+- `updated_at`
+
+---
+
+## Security Highlights
+- All SQL queries are parameterized (prevents SQL injection)
+- User input is validated and sanitized
+- JWT-based authentication for all protected routes
+- Session and cookie security best practices
+- Each user can access only their own data
+
+---
+
+## Recent Enhancements
+- **Statistics & Reports**: Visual charts for task completion, by category/month
+- **Drag & Drop**: Reorder tasks with instant DB sync
+- **Dark Mode**: User toggle, persistent
+- **UI/UX**: Modern, mobile-friendly, RTL support
+- **Security**: Improved password handling, error handling, and session management
+
+---
+
+## Contribution
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Open a Pull Request
+
+---
+
+## License
+MIT License
+
+---
+
+## Contact & Support
+For questions or issues, please open an Issue on GitHub. 

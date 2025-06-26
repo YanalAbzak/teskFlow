@@ -288,6 +288,25 @@
         from { opacity: 1; }
         to   { opacity: 0; height: 0; margin: 0; padding: 0;}
     }
+    .due-badge-today {
+        background: linear-gradient(90deg, #ffe082 0%, #ffd54f 100%) !important;
+        color: #795548 !important;
+        font-weight: bold;
+        border: 1px solid #ffd54f;
+    }
+    .due-badge-tomorrow {
+        background: linear-gradient(90deg, #b3e5fc 0%, #4fc3f7 100%) !important;
+        color: #01579b !important;
+        font-weight: bold;
+        border: 1px solid #4fc3f7;
+    }
+    .due-badge-past {
+        background: linear-gradient(90deg, #ffcdd2 0%, #e57373 100%) !important;
+        color: #b71c1c !important;
+        font-weight: bold;
+        border: 1px solid #e57373;
+        text-decoration: line-through;
+    }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -358,6 +377,17 @@
             const text = getDueText(due);
             badge.querySelector('.due-remaining').textContent = text;
             badge.setAttribute('title', `${new Date(due).toLocaleString('he-IL')}\n${text}`);
+            // הסרת מחלקות קודמות
+            badge.classList.remove('due-badge-today','due-badge-tomorrow','due-badge-past');
+            // הדגשה לפי דחיפות
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const dueDate = new Date(due);
+            dueDate.setHours(0,0,0,0);
+            const diffDays = Math.round((dueDate - today) / (1000*60*60*24));
+            if (diffDays === 0) badge.classList.add('due-badge-today');
+            else if (diffDays === 1) badge.classList.add('due-badge-tomorrow');
+            else if (diffDays < 0) badge.classList.add('due-badge-past');
         });
         // אתחול tooltip של Bootstrap
         if (window.bootstrap) {

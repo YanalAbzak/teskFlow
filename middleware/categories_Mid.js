@@ -1,13 +1,5 @@
 const { db_pool } = require('../config/database');
-
-// פונקציה להוספת backslashes למניעת SQL injection
-function addSlashes(str) {
-    if (typeof str !== 'string') return str;
-    return str.replace(/\\/g, '\\\\')
-              .replace(/'/g, "\\'")
-              .replace(/"/g, '\\"')
-              .replace(/\0/g, '\\0');
-}
+const { addSlashes } = require('../utils/strings');
 
 // הוספת קטגוריה חדשה
 async function AddCategory(req, res, next) {

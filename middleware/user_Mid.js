@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const md5 = require('md5');
 const { db_pool } = require('../config/database');
+const { addSlashes } = require('../utils/strings');
 
 // פונקציה להוספת backslashes למניעת SQL injection
 function addSlashes(str) {

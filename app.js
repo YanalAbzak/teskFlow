@@ -35,7 +35,7 @@ app.use(session({
 }));
 
 // הגדרת הראוטרים
-app.use('/auth', authRouter);
+app.use('/', authRouter);
 app.use('/U', usersRouter);
 app.use('/Tasks', tasksRouter);
 app.use('/Categories', categoriesRouter);
@@ -45,38 +45,7 @@ app.get('/', (req, res) => {
     res.redirect('/Tasks/List');
 });
 
-// הוספת ראוטר להתחברות
-app.get('/login', (req, res) => {
-    res.render('login', {});
-});
-
-app.post('/login', [require('./middleware/user_Mid').CheckLogin], (req, res) => {
-    if(req.validUser)
-        res.redirect("/Tasks/List");
-    else
-        res.render('login', { error: 'שם משתמש או סיסמה שגויים' });
-});
-
-// הוספת ראוטר להרשמה
-app.get('/register', (req, res) => {
-    res.render('register', {});
-});
-
-app.post('/register', [require('./middleware/user_Mid').AddUser], (req, res) => {
-    if(req.GoodOne === true) {
-        res.render('register', { 
-            success: 'ההרשמה הושלמה בהצלחה! כעת תוכל להתחבר למערכת.',
-            data: {}
-        });
-    } else {
-        res.render('register', { 
-            error: 'שגיאה בהרשמה. ייתכן שם המשתמש כבר קיים או שהסיסמה קצרה מדי (מינימום 6 תווים).',
-            data: req.body
-        });
-    }
-});
-
-// הוספת ראוטר להתנתקות
+// הוספת ראוטר להתנתקות (גלובלי)
 app.get('/logout', (req, res) => {
     res.clearCookie('ImLoggedToYoman');
     res.redirect('/login');
@@ -112,7 +81,7 @@ async function initializeDatabase() {
 // הפעלת השרת
 app.listen(PORT, async () => {
     console.log(`Server is running on port http://localhost:${PORT}`);
-    await initializeDatabase();
+    //await initializeDatabase();
     console.log('Personal Tasks App is ready!');
     console.log('Default user: admin / admin123');
 }); 

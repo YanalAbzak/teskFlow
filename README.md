@@ -157,4 +157,8 @@ MIT License
 ---
 
 ## Contact & Support
-For questions or issues, please open an Issue on GitHub. 
+For questions or issues, please open an Issue on GitHub.
+
+![Demo](demo.gif)
+
+*Modern login screen demo – RTL, responsive, and beautiful* 

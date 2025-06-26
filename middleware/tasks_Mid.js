@@ -229,11 +229,86 @@ async function DeleteTask(req, res, next) {
     next();
 }
 
+// סטטיסטיקות ודוחות
+async function GetStats(req, res, next) {
+    const userId = parseInt(req.user_id);
+    const promisePool = db_pool.promise();
+    req.stats = {
+        total: 0,
+        completed: 0,
+        pending: 0,
+        byCategory: [],
+        byMonth: [],
+    };
+    try {
+        // סה"כ משימות, בוצעו, לא בוצעו
+        const [totalRows] = await promisePool.query(
+            'SELECT COUNT(*) as total, SUM(is_completed) as completed FROM tasks WHERE user_id = ?', [userId]
+        );
+        req.stats.total = totalRows[0].total;
+        req.stats.completed = totalRows[0].completed || 0;
+        req.stats.pending = req.stats.total - req.stats.completed;
+
+        // לפי קטגוריה
+        const [catRows] = await promisePool.query(
+            `SELECT c.name as category, COUNT(t.id) as count, SUM(t.is_completed) as completed
+             FROM categories c
+             LEFT JOIN tasks t ON t.category_id = c.id AND t.user_id = ?
+             WHERE c.user_id = ?
+             GROUP BY c.id, c.name
+             ORDER BY c.name`, [userId, userId]
+        );
+        req.stats.byCategory = catRows.map(row => ({
+            category: row.category,
+            total: row.count,
+            completed: row.completed || 0,
+            pending: row.count - (row.completed || 0)
+        }));
+
+        // לפי חודש
+        const [monthRows] = await promisePool.query(
+            `SELECT DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as count, SUM(is_completed) as completed
+             FROM tasks
+             WHERE user_id = ?
+             GROUP BY month
+             ORDER BY month`, [userId]
+        );
+        req.stats.byMonth = monthRows.map(row => ({
+            month: row.month,
+            total: row.count,
+            completed: row.completed || 0,
+            pending: row.count - (row.completed || 0)
+        }));
+    } catch (err) {
+        console.log('Error in GetStats:', err);
+    }
+    next();
+}
+
+// עדכון סדר משימות (Drag & Drop)
+async function ReorderTasksMiddleware(req, res, next) {
+    const userId = parseInt(req.user_id);
+    const { order } = req.body;
+    if (!Array.isArray(order)) return res.status(400).json({ error: 'Invalid order' });
+    try {
+        const promisePool = db_pool.promise();
+        for (let i = 0; i < order.length; i++) {
+            await promisePool.query('UPDATE tasks SET sort_order = ? WHERE id = ? AND user_id = ?', [i, order[i], userId]);
+        }
+        res.locals.reorderSuccess = true;
+        next();
+    } catch (err) {
+        res.status(500).json({ error: 'DB error' });
+    }
+}
+
 module.exports = {
     AddTask,
     GetAllTasks,
     GetOneTask,
     UpdateTask,
     ToggleTaskCompletion,
-    DeleteTask
+    DeleteTask,
+    GetStats,
+    ReorderTasksMiddleware,
 }; 

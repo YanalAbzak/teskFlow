@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `description` varchar(200) NOT NULL,
   `due_date` date DEFAULT NULL,
   `is_completed` tinyint(1) DEFAULT 0,
+  `sort_order` int(11) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

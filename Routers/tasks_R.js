@@ -5,6 +5,8 @@ module.exports = router;
 const user_Mid = require("../middleware/user_Mid");
 const tasks_Mid = require("../middleware/tasks_Mid");
 const categories_Mid = require("../middleware/categories_Mid");
+const db_pool = require('../config/database');
+const { GetStats, ReorderTasksMiddleware } = require('../middleware/tasks_Mid');
 
 // הצגת רשימת המשימות עם סינון ודפדוף
 router.get("/List", [user_Mid.isLogged, tasks_Mid.GetAllTasks], (req, res) => {
@@ -77,4 +79,17 @@ router.post("/ToggleCompletion", [user_Mid.isLogged, tasks_Mid.ToggleTaskComplet
 // מחיקת משימה
 router.post("/Delete", [user_Mid.isLogged, tasks_Mid.DeleteTask], (req, res) => {
     res.redirect("/Tasks/List");
+});
+
+// סטטיסטיקות ודוחות
+router.get('/Stats', [user_Mid.isLogged, GetStats], (req, res) => {
+    res.render('tasks_stats', {
+        page_title: 'סטטיסטיקות ודוחות',
+        stats: req.stats
+    });
+});
+
+// עדכון סדר משימות (Drag & Drop)
+router.post('/Reorder', user_Mid.isLogged, ReorderTasksMiddleware, (req, res) => {
+    res.json({ success: true });
 }); 

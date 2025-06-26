@@ -1,0 +1,111 @@
+<%- include('partials/header') %>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="fas fa-chart-bar me-2"></i>סטטיסטיקות ודוחות</h3>
+            </div>
+            <div class="card-body">
+                <div class="row text-center mb-4">
+                    <div class="col-md-4">
+                        <div class="h4 mb-1"><%= stats.total %></div>
+                        <div class="text-muted">סה"כ משימות</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="h4 mb-1 text-success"><%= stats.completed %></div>
+                        <div class="text-muted">בוצעו</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="h4 mb-1 text-warning"><%= stats.pending %></div>
+                        <div class="text-muted">לביצוע</div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <h5 class="mb-3"><i class="fas fa-chart-pie me-2"></i>משימות לפי קטגוריה</h5>
+                        <canvas id="catChart" height="220"></canvas>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h5 class="mb-3"><i class="fas fa-calendar-alt me-2"></i>משימות לפי חודש</h5>
+                        <canvas id="monthChart" height="220"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // קטגוריות
+    const catLabels = <%- JSON.stringify(stats.byCategory.map(c => c.category)) %>;
+    const catTotal = <%- JSON.stringify(stats.byCategory.map(c => c.total)) %>;
+    const catCompleted = <%- JSON.stringify(stats.byCategory.map(c => c.completed)) %>;
+    const catPending = <%- JSON.stringify(stats.byCategory.map(c => c.pending)) %>;
+
+    // חודשים
+    const monthLabels = <%- JSON.stringify(stats.byMonth.map(m => m.month)) %>;
+    const monthTotal = <%- JSON.stringify(stats.byMonth.map(m => m.total)) %>;
+    const monthCompleted = <%- JSON.stringify(stats.byMonth.map(m => m.completed)) %>;
+    const monthPending = <%- JSON.stringify(stats.byMonth.map(m => m.pending)) %>;
+
+    // גרף קטגוריות
+    new Chart(document.getElementById('catChart'), {
+        type: 'bar',
+        data: {
+            labels: catLabels,
+            datasets: [
+                {
+                    label: 'בוצעו',
+                    data: catCompleted,
+                    backgroundColor: '#10b981',
+                },
+                {
+                    label: 'לביצוע',
+                    data: catPending,
+                    backgroundColor: '#f59e0b',
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'top' } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // גרף חודשים
+    new Chart(document.getElementById('monthChart'), {
+        type: 'line',
+        data: {
+            labels: monthLabels,
+            datasets: [
+                {
+                    label: 'בוצעו',
+                    data: monthCompleted,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16,185,129,0.2)',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'לביצוע',
+                    data: monthPending,
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245,158,11,0.2)',
+                    tension: 0.3,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'top' } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+</script>
+
+<%- include('partials/footer') %> 

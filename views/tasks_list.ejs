@@ -71,9 +71,9 @@
 
                 <!-- רשימת המשימות -->
                 <% if (tasks && tasks.length > 0) { %>
-                    <div class="row">
+                    <div class="row" id="tasksSortable">
                         <% tasks.forEach(function(task, index) { %>
-                            <div class="col-12 mb-3">
+                            <div class="col-12 mb-3 task-draggable" data-id="<%= task.id %>">
                                 <div class="card task-item <%= task.is_completed ? 'completed-task' : '' %>" 
                                      style="animation-delay: <%= index * 0.1 %>s;">
                                     <div class="card-body">
@@ -272,5 +272,22 @@
         }
     }
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+    const sortable = new Sortable(document.getElementById('tasksSortable'), {
+        animation: 150,
+        handle: '.card',
+        draggable: '.task-draggable',
+        onEnd: function (evt) {
+            const ids = Array.from(document.querySelectorAll('.task-draggable')).map(el => el.getAttribute('data-id'));
+            fetch('/Tasks/Reorder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order: ids })
+            });
+        }
+    });
+</script>
 
 <%- include('partials/footer') %> 

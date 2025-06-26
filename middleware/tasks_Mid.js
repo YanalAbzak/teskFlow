@@ -294,6 +294,14 @@ async function ReorderTasksMiddleware(req, res, next) {
     }
 }
 
+function removeTask(taskId) {
+  const el = document.querySelector(`[data-id='${taskId}']`);
+  if (el) {
+    el.classList.add('fade-out');
+    setTimeout(() => el.remove(), 500);
+  }
+}
+
 module.exports = {
     AddTask,
     GetAllTasks,

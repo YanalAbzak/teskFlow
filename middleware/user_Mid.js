@@ -3,15 +3,6 @@ const md5 = require('md5');
 const { db_pool } = require('../config/database');
 const { addSlashes } = require('../utils/strings');
 
-// פונקציה להוספת backslashes למניעת SQL injection
-function addSlashes(str) {
-    if (typeof str !== 'string') return str;
-    return str.replace(/\\/g, '\\\\')
-              .replace(/'/g, "\\'")
-              .replace(/"/g, '\\"')
-              .replace(/\0/g, '\\0');
-}
-
 // בדיקה אם המשתמש מחובר באמצעות JWT token
 async function isLogged(req, res, next) {
     const jwtToken = req.cookies.ImLoggedToYoman;

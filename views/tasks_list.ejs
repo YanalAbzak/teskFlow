@@ -103,6 +103,7 @@
                                                                 <span class="badge bg-info">
                                                                     <i class="fas fa-calendar me-1"></i>
                                                                     <%= new Date(task.due_date).toLocaleDateString('he-IL') %>
+                                                                    <span class="due-remaining" data-due="<%= task.due_date %>"></span>
                                                                 </span>
                                                             <% } %>
                                                             
@@ -302,6 +303,27 @@
                 body: JSON.stringify({ order: ids })
             });
         }
+    });
+
+    // חישוב זמן נותר לכל due_date
+    function getDueText(dueDateStr) {
+        if (!dueDateStr) return '';
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const due = new Date(dueDateStr);
+        due.setHours(0,0,0,0);
+        const diffDays = Math.round((due - today) / (1000*60*60*24));
+        if (isNaN(diffDays)) return '';
+        if (diffDays === 0) return ' (היום)';
+        if (diffDays === 1) return ' (מחר)';
+        if (diffDays === -1) return ' (אתמול)';
+        if (diffDays > 1) return ` (עוד ${diffDays} ימים)`;
+        if (diffDays < -1) return ` (לפני ${Math.abs(diffDays)} ימים)`;
+        return '';
+    }
+    document.querySelectorAll('.due-remaining').forEach(function(el) {
+        const due = el.getAttribute('data-due');
+        el.textContent = getDueText(due);
     });
 </script>
 

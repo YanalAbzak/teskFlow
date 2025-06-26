@@ -20,6 +20,89 @@
             --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
+        body.dark-mode {
+            --primary-color: #6366f1;
+            --primary-hover: #3730a3;
+            --secondary-color: #cbd5e1;
+            --success-color: #22d3ee;
+            --warning-color: #fbbf24;
+            --danger-color: #f87171;
+            --info-color: #38bdf8;
+            --light-bg: #18181b;
+            background: linear-gradient(135deg, #18181b 0%, #312e81 100%) !important;
+            color: #e5e7eb;
+        }
+        body.dark-mode .navbar,
+        body.dark-mode .card,
+        body.dark-mode .alert,
+        body.dark-mode .dropdown-menu {
+            background: rgba(30, 41, 59, 0.95) !important;
+            color: #e5e7eb !important;
+            box-shadow: var(--card-shadow);
+        }
+        body.dark-mode .navbar-brand,
+        body.dark-mode .nav-link,
+        body.dark-mode .text-muted {
+            color: #cbd5e1 !important;
+        }
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background: #23272f !important;
+            color: #e5e7eb;
+            border-color: #334155;
+        }
+        body.dark-mode .form-control:focus,
+        body.dark-mode .form-select:focus {
+            background: #23272f !important;
+            color: #fff;
+            border-color: var(--primary-color);
+        }
+        body.dark-mode .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #3730a3 100%);
+            color: #fff;
+        }
+        body.dark-mode .btn-success {
+            background: linear-gradient(135deg, #22d3ee 0%, #0e7490 100%);
+            color: #fff;
+        }
+        body.dark-mode .btn-danger {
+            background: linear-gradient(135deg, #f87171 0%, #991b1b 100%);
+            color: #fff;
+        }
+        body.dark-mode .btn-warning {
+            background: linear-gradient(135deg, #fbbf24 0%, #b45309 100%);
+            color: #fff;
+        }
+        body.dark-mode .btn,
+        body.dark-mode .page-link {
+            color: #e5e7eb;
+        }
+        body.dark-mode .page-link:hover,
+        body.dark-mode .page-item.active .page-link {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+        body.dark-mode .category-badge {
+            color: #fff;
+        }
+        body.dark-mode .bg-light {
+            background-color: #23272f !important;
+        }
+        body.dark-mode .bg-primary {
+            background-color: #3730a3 !important;
+        }
+        body.dark-mode .bg-success {
+            background-color: #0e7490 !important;
+        }
+        body.dark-mode .bg-danger {
+            background-color: #991b1b !important;
+        }
+        body.dark-mode .bg-warning {
+            background-color: #b45309 !important;
+        }
+        body.dark-mode .bg-info {
+            background-color: #38bdf8 !important;
+        }
 
         body {
             font-family: 'Heebo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -297,7 +380,12 @@
                     </li>
                 </ul>
                 
-                <ul class="navbar-nav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item me-2">
+                        <button id="toggleDarkMode" class="btn btn-outline-secondary" title="החלף מצב כהה/בהיר">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/logout">
                             <i class="fas fa-sign-out-alt me-1"></i>התנתק
@@ -310,3 +398,28 @@
 
     <!-- תוכן הדף -->
     <main class="container mt-5 pt-5"> 
+
+    <script>
+        // Dark mode toggle
+        function setDarkMode(enabled) {
+            if (enabled) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', '1');
+                document.getElementById('toggleDarkMode').innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', '0');
+                document.getElementById('toggleDarkMode').innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load mode from localStorage
+            const dark = localStorage.getItem('darkMode') === '1';
+            setDarkMode(dark);
+            document.getElementById('toggleDarkMode').onclick = function() {
+                setDarkMode(!document.body.classList.contains('dark-mode'));
+            };
+        });
+    </script>
+</body>
+</html> 

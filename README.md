@@ -14,7 +14,11 @@ Demo
 - **Custom Categories**: Add, edit, and color-code categories
 - **Task Filtering**: By status (completed/pending) and by category
 - **Pagination**: 10 tasks per page
-- **Due Dates**: Set deadlines for tasks
+- **Due Dates & Smart UX**:
+  - Set deadlines for tasks
+  - Countdown timer for today's tasks (HH:MM:SS)
+  - Tooltip with full due date and remaining time
+  - Visual highlight for urgent/overdue tasks (today, tomorrow, past) with colored badges
 - **Modern UI**: Responsive, RTL-friendly, Bootstrap 5
 - **Security**: SQL injection/XSS protection, session management, input validation
 - **Statistics & Reports**: Interactive charts (Chart.js) for completed/pending tasks, by category and by month
@@ -141,7 +145,7 @@ project-root/
 - **Statistics & Reports**: Visual charts for task completion, by category/month
 - **Drag & Drop**: Reorder tasks with instant DB sync
 - **Dark Mode**: User toggle, persistent
-- **UI/UX**: Modern, mobile-friendly, RTL support
+- **UI/UX**: Modern, mobile-friendly, RTL support, countdown timer, tooltips, and visual urgency highlights
 - **Security**: Improved password handling, error handling, and session management
 
 ---

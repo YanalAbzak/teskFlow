@@ -40,15 +40,10 @@ app.use('/U', usersRouter);
 app.use('/Tasks', tasksRouter);
 app.use('/Categories', categoriesRouter);
 
+
 // דף הבית - הפניה לרשימת המשימות
 app.get('/', (req, res) => {
     res.redirect('/Tasks/List');
-});
-
-// הוספת ראוטר להתנתקות (גלובלי)
-app.get('/logout', (req, res) => {
-    res.clearCookie('ImLoggedToYoman');
-    res.redirect('/login');
 });
 
 // דף 404
@@ -84,4 +79,5 @@ app.listen(PORT, async () => {
     //await initializeDatabase();
     console.log('Personal Tasks App is ready!');
     console.log('Default user: admin / admin123');
-}); 
+});
+

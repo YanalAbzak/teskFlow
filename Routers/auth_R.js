@@ -36,3 +36,9 @@ router.post("/register", [user_Mid.AddUser], (req, res) => {
         });
     }
 });
+
+// התנתקות
+router.get("/logout", (req, res) => {
+    res.clearCookie('ImLoggedToYoman');
+    res.redirect('/login');
+});
